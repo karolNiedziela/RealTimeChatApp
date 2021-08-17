@@ -1,5 +1,4 @@
 $(function () {
-    alert('hello');
     document.addEventListener("click", (event) => {
         const multiplicatorActive = document.querySelector(".multiplicator.active");
 
