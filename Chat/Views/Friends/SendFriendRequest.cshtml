@@ -1,0 +1,32 @@
+@model SendFriendRequestViewModel
+
+<div class="container-fluid container-add-friend">
+    <div class="row information mb-2">
+        <div class="col-sm-12 base-information">
+            Add friend
+        </div>
+    </div>
+    <div class="row additional-information">
+        <div class="col-sm-12">
+            You can add friend using invitation 4-length tag or username
+        </div>
+    </div>
+
+    <form class="mt-4" asp-controller="Friends" asp-action="SendFriendRequest">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="row">
+            <div class="col-sm-8">
+                <input class="form-control" placeholder="Enter 4-length tag or username" asp-for="SearchedFriend">
+                <span asp-validation-for="SearchedFriend" class="text-danger"></span>
+            </div>
+            <div class="col-sm-2">
+                <button type="submit" class="btn btn-primary form-control">Send friend request</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

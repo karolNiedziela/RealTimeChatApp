@@ -1,0 +1,29 @@
+﻿@model IEnumerable<Room>
+
+<ul class="nav_list">
+    <li class="nav-list-li">
+        <a asp-controller="Home" asp-action="Index">
+            <i class='bx bx-home'></i>
+            <span class="links_name">Home</span>
+        </a>
+        <span class="my-tooltip">Home</span>
+    </li>
+
+    <li class="nav-list-li">
+        <a asp-controller="Rooms" asp-action="CreateRoom">
+            <i class='bx bx-plus'></i>
+            <span class="links_name">Create room</span>
+        </a>
+        <span class="my-tooltip">Create room</span>
+    </li>
+    @foreach (var room in Model.ToList())
+    {
+        <li class="nav-list-li">
+            <a asp-controller="Rooms" asp-action="Index" asp-route-roomId="@room.Id">
+                <i class='bx bx-chat'></i>
+                <span class="links_name">@room.Name</span>
+            </a>
+            <span class="my-tooltip">@room.Name</span>
+        </li>
+    }
+</ul>

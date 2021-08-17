@@ -1,0 +1,93 @@
+﻿@model UserFriendsViewModel
+
+<div class="all-friends-main">
+    <div class="row content row-header">
+        All friends - @Model.Friends.Count()
+    </div>
+    @foreach (var friend in Model.Friends)
+    {
+        <div class="row content">
+            <img class="user-friend-image" src="https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png" />
+            <div class="col-sm-10">@friend.FriendName</div>
+
+            <div class="col-sm icons vertical-rounded">
+                <i class='bx bx-dots-vertical-rounded'></i>
+            </div>
+
+            <div class="multiplicator">
+                <div class="multiplicator-row">
+                    <div class="multiplicator-col">
+                        <form asp-controller="Rooms" asp-action="InviteToRoom" method="get">
+                            <input type="hidden" name="userId" value="@friend.FriendId" />
+                            <a onclick="this.parentElement.submit()">Invite to room</a>
+                        </form>
+
+                    </div>
+                </div>
+                <div class="multiplicator-row">
+                    <div class="multiplicator-col">
+                        <form asp-controller="Friends" asp-action="RemoveFriend" id="removeFriend">
+                            <input type="hidden" name="userId" value="@friend.FriendId" />
+                            <span class="submit-delete-modal" data-toggle="modal" data-target="#confirmDeleteModal"> Delete from friends</span>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @await Component.InvokeAsync("ConfirmDeleteModal");
+    }
+</div>
+
+
+<script>
+    $(function () {
+        document.addEventListener("click", (event) => {
+            const multiplicatorActive = document.querySelector(".multiplicator.active");
+
+            // check if someone clicked beyond multiplicator
+            if (
+                multiplicatorActive !== null &&
+                !event.target.classList.contains("multiplicator-col") &&
+                !event.target.classList.contains("bx-dots-vertical-rounded")
+            ) {
+                multiplicatorActive.classList.remove("active");
+            }
+        });
+
+        const verticalDots = document.querySelectorAll(".bx-dots-vertical-rounded");
+        let isClicked = false;
+        verticalDots.forEach((verticalDot) => {
+            const verticalDotCoords = verticalDot.getBoundingClientRect();
+            console.log(verticalDotCoords);
+            const multiplicator = verticalDot
+                .closest(".row.content")
+                .querySelector(".multiplicator");
+
+            multiplicator.style.right =
+                document.body.clientWidth - verticalDotCoords.left + "px";
+            verticalDot.addEventListener("click", (event) => {
+                const multiplicator = verticalDot
+                    .closest(".row.content")
+                    .querySelector(".multiplicator");
+                if (multiplicator.classList.contains("active")) {
+                    multiplicator.classList.remove("active");
+                } else {
+                    closePreviousOpenedMultiplicator();
+                    multiplicator.classList.add("active");
+                }
+            });
+        });
+
+        function closePreviousOpenedMultiplicator() {
+            const multiplicatorActive = document.querySelector(".multiplicator.active");
+
+            if (multiplicatorActive !== null) {
+                multiplicatorActive.classList.remove("active");
+            }
+        }
+
+    });
+
+
+</script>

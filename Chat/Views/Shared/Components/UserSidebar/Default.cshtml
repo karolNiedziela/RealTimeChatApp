@@ -1,0 +1,38 @@
+@model UserSidebarViewModel 
+
+<div class="sidebar-user @(User.Identity.IsAuthenticated ? "show" : "hide")">
+    <div class="user-friends"> <i class='bx bxs-group'></i> <span>Friends</span></div>
+    <div class="user-friends-info">
+        Private messages</div>
+    <ul class="user-friends-nav-list">
+        <li>
+            <span>
+                <img class="user-friend-image" src="https://www.w3schools.com/w3images/avatar2.png" />
+                <span class="user-friend-name">Test</span>
+            </span>
+        </li>
+        <li>
+            <span>
+                <img class="user-friend-image" src="https://www.w3schools.com/w3images/avatar2.png" />
+                <span class="user-friend-name">Test</span>
+            </span>
+        </li>
+        <li>
+            <span>
+                <img class="user-friend-image" src="https://www.w3schools.com/w3images/avatar2.png" />
+                <span class="user-friend-name">Test</span>
+            </span>
+        </li>
+    </ul>
+    <div class="profile">
+        <div class="profile-details">
+            <img class="profile-image" src="https://www.w3schools.com/w3images/avatar2.png" alt="" />
+            <div class="profile-user-info">
+                <span class="profile-username">@Model.Username</span>
+                <span class="profile-invitation-tag">#@Model.InvitationTag</span>
+            </div>
+
+            <i class='bx bx-cog'></i>
+        </div>
+    </div>
+</div>

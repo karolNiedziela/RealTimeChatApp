@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Chat</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/user-sidebar.css" />
+    <link rel="stylesheet" href="~/css/home.css" />
+    <link rel="stylesheet" href="~/css/room.css" />
+    <link rel="stylesheet" href="~/css/add-friend.css" />
+    <link rel="stylesheet" href="~/css/multiplicator.css" />
+    <link rel="stylesheet" href="~/css/modal.css" />
+
+    <!-- Boxicons CDN Link -->
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" />
+
+    <!-- Font awesome CDN Link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <partial name="_LoginPartial" />
+
+    <div class="sidebar">
+        <div class="logo_content">
+            <div class="logo_name">Chat</div>
+            <i class="bx bx-menu menu_btn" id="menu_btn"></i>
+        </div>
+        @if (User.Identity.IsAuthenticated)
+        {
+            @await Component.InvokeAsync("MainSidebar")
+
+        }
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="profile_content">
+                <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button id="logout" type="submit" class="nav-link btn btn-link text-dark"><i class="bx bx-log-out" id="log_out"></i></button>
+                </form>
+            </div>
+        }
+    </div>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        @await Component.InvokeAsync("UserSidebar");
+    }
+
+    <div class="home_content">
+        @RenderBody()
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/modal.js" asp-append-version="true"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

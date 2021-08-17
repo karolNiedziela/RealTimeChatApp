@@ -1,0 +1,163 @@
+﻿@model Room
+
+<div class="room-info">
+    <div class="room-name">
+        @Model.Name
+    </div>
+    <div class="room-icon">
+        <i class="bx bx-cog"></i>
+        <i class="bx bx-user d-inline-block"></i>
+    </div>
+</div>
+
+<div class="container-fluid container-room">
+    <div class="col-sm-12 conversation">
+        @foreach (var message in Model.Messages)
+        {
+            <div class="row-message-body">
+                <div class="col-sm-12 message-main">
+                    <div class="message">
+                        <span class="message-sender">
+                            @message.SentBy:
+                        </span>
+                        <div class="message-text">
+                            @message.Text
+                        </div>
+                        <span class="message-time float-right">
+                            @message.Timestamp
+                        </span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row reply align-items-center">
+    <form onsubmit="sendMessage(event)">
+        <input type="hidden" name="roomId" value="@Model.Id"/>
+        <div class="reply-main">
+                <textarea rows="1" id="comment" name="text"></textarea>
+        </div>
+     
+        <div class="reply-send ">
+            <button type="submit" class="btn btn-primary" id="sendButton">Send</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+
+    <script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+    <script src="~/js/room.js"></script>
+
+    <script>
+        const connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+        connection.on("ReceiveMessage", function (data) {
+            const rowMessageBody = document.createElement('div');
+            rowMessageBody.classList.add('row-message-body');
+
+            const messageMain = document.createElement('div');
+            messageMain.classList.add('col-sm-12', 'message-main');
+
+            const message = document.createElement('div');
+            message.classList.add('message');
+
+            const messageSender = document.createElement('span');
+            messageSender.classList.add('message-sender');
+            messageSender.textContent = data.sentBy;
+
+            const messageText = document.createElement('div');
+            messageText.classList.add('message-text');
+            messageText.textContent = data.text;
+
+            const messageTime = document.createElement('div');
+            messageTime.classList.add('message-time', 'float-right');
+            messageTime.textContent = data.timestamp;
+
+            message.append(messageSender);
+            message.append(messageText);
+            message.append(messageTime);
+
+            messageMain.append(message);
+
+            rowMessageBody.append(messageMain);
+
+            const conversation = document.querySelector('.conversation');
+            conversation.append(rowMessageBody);
+
+            scrollToBottom();
+        });
+
+        connection.start()
+            .then(function () {
+                connection.invoke('joinRoom', '@Model.Id');
+                console.log("Joined to room");
+                scrollToBottom();
+            })
+            .then(function () {
+                connection.invoke('GetChattersNumber').then(result => {
+                    $('.bx-user')
+                        .attr('data-original-title', result)
+                        .tooltip('update');
+                });
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
+
+        window.addEventListener('unload', function () {
+            connection.invoke('leaveRoom', '@Model.Id');
+        });
+
+        const sendMessage = function (event) {
+            event.preventDefault();
+
+            const data = new FormData(event.target);
+            console.log(data);
+            document.getElementById('comment').value = '';
+            axios.post('/Rooms/SendMessage', data)
+                .then(result => {
+                    console.log("Message sent!");
+                })
+                .catch(error => {
+                    console.log("Failed to send message!")
+                });
+        }
+
+        function scrollToBottom() {
+            const conversation = document.querySelector('.conversation');
+            conversation.scrollTop = conversation.scrollHeight - conversation.clientHeight;
+        }
+        const textArea = document.getElementById('comment');
+        textArea.addEventListener('keypress', (event) => {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+                if (document.getElementById('comment').value.length > 0) {
+                    document.getElementById('sendButton').click();
+                }
+
+            }
+        });
+
+        $(".bx-user").click(function () {
+            connection.invoke('GetChattersNumber').then(result => {
+                    $('.bx-user')
+                        .attr('data-original-title', result)
+                        .tooltip('update');
+                });
+        });
+
+
+        $(".bx-user").tooltip({ title: "1", trigger: "click", placement: "left" })
+
+        $(function () {
+            $(document).on('shown.bs.tooltip', function (event) {
+                setTimeout(function () {
+                    $(event.target).tooltip('hide');
+                }, 5000);
+            });
+        });
+    </script>
+}

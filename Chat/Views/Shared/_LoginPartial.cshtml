@@ -1,0 +1,22 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Chat.Models
+
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@if (!SignInManager.IsSignedIn(User))
+{
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom mb-3 mr-auto">
+        <ul class="navbar-nav ml-auto">
+
+
+            <li class="nav-item">
+                <a class="nav-link text-light" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
+            </li>
+
+        </ul>
+    </nav>
+}

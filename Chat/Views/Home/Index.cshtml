@@ -1,0 +1,138 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container-fluid container-home">
+    <div class="row header">
+        <i class='bx bxs-group'></i>
+        <div class="divider"></div>
+        <a class="col col-sm-2" id="all">All</a>
+        <a class="col col-sm-3" id="friend-requests">
+            Friend requests @if (ViewBag.NumberOfFriendRequests != 0)
+            {
+                <span class="number-of-friend-requests">@ViewBag.NumberOfFriendRequests</span>
+            }
+        </a>
+        <a class="col col-sm-2" id="blocked">Blocked</a>
+        <a class="col col-sm-3" id="room-invitation">
+            Room invitations
+            @if (ViewBag.NumberOfRoomInvitations != 0)
+            {
+                <span class="number-of-room-invitations"> @ViewBag.NumberOfRoomInvitations</span>
+            }
+        </a>
+        <a class="col-sm add-friend" asp-controller="Friends" asp-action="SendFriendRequest">Add Friend</a>
+    </div>
+    <span class="view-component">@await Component.InvokeAsync("AllFriends")</span>
+</div>
+
+
+@section Scripts {
+    <script src="~/js/signalr/dist/browser/signalr.min.js"></script>
+     <script src="~/js/multiplicator.js"></script>
+    <script>
+
+        //$('#all').click(function () {
+        //    $('.view-component').load('/Home/All');
+        //});
+
+        $(document).ready(function () {
+        $('#all').click(function () {
+            {
+                $(".view-component").empty();
+                var _url = '@Url.Action("All", "Home")';
+                $.ajax({
+                    type: "GET",
+                    url: _url,
+                    success: function (result) {
+                        $(".view-component").html(result);
+
+                    },
+                });
+            }
+        });
+    });
+
+        $('#blocked').click(function () {
+            $('.view-component').load('/Home/Blocked');
+        });
+
+        $('#friend-requests').click(function () {
+            $('.view-component').load('/Home/Waiting');
+        });
+
+        $('#room-invitation').click(function () {
+            $('.view-component').load('/Home/RoomInvitation');
+        });
+
+        var connection = new signalR.HubConnectionBuilder().withUrl("/invitationHub").build();
+
+        connection.on("ReceiveInvitation", function () {
+            const numberOfFriendRequests = document.querySelector('.number-of-friend-requests');
+            const friendRequest = document.getElementById('friend-requests');
+
+            let valueOfSpan = 1;
+            if (numberOfFriendRequests === null) {
+                const span = document.createElement('span');
+                span.classList.add('number-of-friend-requests');
+                valueOfSpan = 1;
+                span.textContent = valueOfSpan;
+                friendRequest.append(span);
+            } else {
+                numberOfFriendRequests.textContent = Number(numberOfFriendRequests.textContent) + 1;
+            }
+
+        });
+
+        connection.on("ReceiveRoomInvitation", function () {
+            const numberOfRoomInvitations = document.querySelector('.number-of-room-invitations');
+            const roomInvitation = document.getElementById('room-invitation');
+
+            let valueOfSpan = 1;
+            if (numberOfRoomInvitations === null) {
+                const span = document.createElement('span');
+                span.classList.add('number-of-room-invitations');
+                valueOfSpan = 1;
+                span.textContent = valueOfSpan;
+                roomInvitation.append(span);
+            } else {
+                numberOfRoomInvitations.textContent = Number(numberOfRoomInvitations.textContent) + 1;
+            }
+
+        })
+
+        connection.on("AcceptedInvitation", function (data) {
+            const allFriendsMain = document.querySelector('.all-friends-main');
+
+            if (allFriendsMain !== null) {
+                const rowContent = document.createElement('div');
+                rowContent.classList.add('row', 'content');
+
+                const image = document.createElement('img');
+                image.classList.add('user-friend-image');
+                image.src = "https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png";
+
+                const colSm = document.createElement('div');
+                colSm.classList.add('col-sm-10');
+                colSm.textContent = data;
+
+                const colIcons2 = document.createElement('div');
+                colIcons2.classList.add('col-sm', 'icons');
+                const iconDots = document.createElement('i');
+                iconDots.classList.add('bx', 'bx-dots-vertical-rounded');
+                colIcons2.append(iconDots);
+
+                rowContent.append(image);
+                rowContent.append(colSm);
+                rowContent.append(colIcons);
+                rowContent.append(colIcons2);
+
+                allFriendsMain.append(rowContent);
+            }
+
+        });
+
+        connection.start();
+    </script>
+
+}
